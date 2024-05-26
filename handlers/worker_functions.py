@@ -70,7 +70,7 @@ async def channels_handler(msg: types.Message):
 async def add_channel_handler(msg: types.Message, state: FSMContext):
     if msg.from_user.id in ADMINS:
         await state.set_state(AddChannelState.username)
-        await msg.answer(text="Qo'shish kerak bo'lgan kanal Usernameni kiriting ✍️", reply_markup=exit_btn())
+        await msg.answer(text="Qo'shish kerak bo'lgan kanal linkini kiriting ✍️", reply_markup=exit_btn())
     else:
         await msg.answer("Siz admin emassiz ❌", reply_markup=types.ReplyKeyboardRemove())
 
@@ -229,7 +229,7 @@ async def forward_last_video(msg: types.Message, bot: Bot):
         data = get_movie(int(msg.text))
         if data:
             try:
-                await bot.send_video(chat_id=msg.from_user.id, video=data[0], caption=f"{data[1]}\n\n🤖 Bizning bot: @Sarakinolar_bot")
+                await bot.send_video(chat_id=msg.from_user.id, video=data[0], caption=f"{data[1]}\n\n🤖 Bizning bot: @Tarjima_KinoIarbot")
             except:
                 await msg.reply(f"{msg.text} - id bilan hech qanday kino topilmadi ❌") 
         else:
