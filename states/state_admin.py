@@ -7,6 +7,7 @@ class ReklamaState(StatesGroup):
 
 class AddMedia(StatesGroup):
     media = State()
+    media_id = State()
 
 
 class AddChannelState(StatesGroup):

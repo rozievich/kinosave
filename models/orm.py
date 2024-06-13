@@ -35,17 +35,14 @@ class Base:
 
 class MediaClass(Base):
 
-    def create_data(self, file_id: str, caption: str):
-        query = f"INSERT INTO {self.table}(file_id, caption) VALUES (%s, %s)"
-        cur.execute(query, (file_id, caption))
+    def create_data(self, post_id: int, file_id: str, caption: str):
+        query = f"INSERT INTO {self.table}(post_id, file_id, caption) VALUES (%s, %s, %s)"
+        cur.execute(query, (post_id, file_id, caption))
         conn.commit()
 
-    def get_id(self):
-        cur.execute(f"SELECT max(id) FROM {self.table}")
-        return cur.fetchone()
 
     def get_data(self, post_id: int):
-        query = f"SELECT * FROM {self.table} WHERE id = %s"
+        query = f"SELECT * FROM {self.table} WHERE post_id = %s"
         cur.execute(query, (post_id,))
         return cur.fetchone()
 

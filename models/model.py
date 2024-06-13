@@ -36,13 +36,13 @@ def statistika_user():
 
 
 # Movies table data
-def create_movie(file_id: str, caption: str) -> int:
+def create_movie(post_id: int, file_id: str, caption: str) -> int:
     data = movie.get_movie(file_id)
     if not data:
-        movie.create_data(file_id, caption)
-        return movie.get_id()
+        movie.create_data(post_id, file_id, caption)
+        return post_id
     else:
-        return data.get('id', None)
+        return data.get('post_id', None)
 
 
 def get_movie(post_id: int):
