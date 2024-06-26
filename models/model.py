@@ -67,12 +67,12 @@ def statistika_movie():
 
 
 # Channel table data
-def create_channel(username: str, channel_id: str):
+def create_channel(username: str, channel_id: str, is_order: bool):
     data = channel.get_data(channel_id=channel_id)
     if data:
         return False
     else:
-        channel.create_data(username, channel_id)
+        channel.create_data(username, channel_id, is_order)
         return True
     
 

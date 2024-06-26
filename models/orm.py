@@ -7,7 +7,7 @@ class Base:
 
     def create_data(self, telegram_id: str):
         query = f"INSERT INTO {self.table}(telegram_id) VALUES (%s)"
-        cur.execute(query, (telegram_id, ))
+        cur.execute(query, (telegram_id,))
         conn.commit()
 
     def get_data(self, telegram_id: str):
@@ -55,24 +55,21 @@ class MediaClass(Base):
         return cur.fetchone()
 
 
-
 class ChannelClass(Base):
 
-    def create_data(self, username: str, channel_id: str):
-        query = f"INSERT INTO {self.table}(username, channel_id) VALUES (%s, %s)"
-        cur.execute(query, (username, channel_id))
+    def create_data(self, username: str, channel_id: str, is_order: bool):
+        query = f"INSERT INTO {self.table}(username, channel_id, is_order) VALUES (%s, %s, %s)"
+        cur.execute(query, (username, channel_id, is_order))
         conn.commit()
-
 
     def get_data(self, channel_id: str):
         query = f"SELECT * FROM {self.table} WHERE channel_id = %s"
         cur.execute(query, (channel_id,))
         return cur.fetchone()
 
-
     def delete_data(self, channel_id: str):
         query = f"DELETE FROM {self.table} WHERE channel_id = %s"
-        cur.execute(query, (channel_id, ))
+        cur.execute(query, (channel_id,))
         conn.commit()
 
 
@@ -80,9 +77,9 @@ class LinkClass(Base):
 
     def create_data(self, link: str):
         query = f"INSERT INTO {self.table}(link) VALUES (%s)"
-        cur.execute(query, (link, ))
+        cur.execute(query, (link,))
         conn.commit()
-    
+
     def get_data(self, link: str):
         query = f"SELECT * FROM {self.table} WHERE link = %s"
         cur.execute(query, (link,))
@@ -90,5 +87,5 @@ class LinkClass(Base):
 
     def delete_data(self, link: str):
         query = f"DELETE FROM {self.table} WHERE link = %s"
-        cur.execute(query, (link, ))
+        cur.execute(query, (link,))
         conn.commit()

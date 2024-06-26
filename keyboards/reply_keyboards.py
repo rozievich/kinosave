@@ -1,7 +1,6 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 
-
 def admin_btn():
     btn = ReplyKeyboardMarkup(
         keyboard=[
@@ -61,6 +60,24 @@ def channels_btn():
 def exit_btn():
     btn = ReplyKeyboardMarkup(
         keyboard=[
+            [
+                KeyboardButton(text="❌")
+            ]
+        ],
+        one_time_keyboard=True,
+        resize_keyboard=True
+    )
+    return btn
+
+
+def is_order_btn():
+    btn = ReplyKeyboardMarkup(
+        keyboard=
+        [
+            [
+                KeyboardButton(text="Ha ✅"),
+                KeyboardButton(text="Yo'q ❌"),
+            ],
             [
                 KeyboardButton(text="❌")
             ]

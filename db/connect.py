@@ -1,7 +1,6 @@
 import psycopg2
 from psycopg2.extras import DictCursor
 
-
 conn = psycopg2.connect(
     user="postgres",
     dbname="sara_db",
@@ -26,6 +25,7 @@ def startup_table():
         id BIGSERIAL PRIMARY KEY,
         username VARCHAR(128) NOT NULL,
         channel_id VARCHAR(128) UNIQUE,
+        is_order BOOLEAN DEFAULT 0,
         created_at TIMESTAMP DEFAULT now()
     )
     '''
@@ -44,8 +44,18 @@ def startup_table():
         created_at TIMESTAMP DEFAULT now()
     )
     '''
+    join_request = '''
+    CREATE TABLE IF NOT EXISTS join_requests(
+        id BIGSERIAL PRIMARY KEY,
+        channel_id VARCHAR(800) not null,
+        user_id VARCHAR(800) not null,
+        created_at TIMESTAMP DEFAULT now()
+    )
+    '''
+
     cur.execute(query)
     cur.execute(channel_query)
     cur.execute(link_query)
     cur.execute(media_query)
+    cur.execute(join_request)
     conn.commit()
