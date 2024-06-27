@@ -72,11 +72,6 @@ class ChannelClass(Base):
         cur.execute(query, (is_order,))
         return cur.fetchall()
 
-    def get_data_is_order(self, channel_id: str, is_order: bool):
-        query = f"SELECT * FROM {self.table} WHERE channel_id = %s and is_order = %s"
-        cur.execute(query, (channel_id, is_order))
-        return cur.fetchone()
-
     def delete_data(self, channel_id: str):
         query = f"DELETE FROM {self.table} WHERE channel_id = %s"
         query_request = f"DELETE FROM join_requests WHERE channel_id = %s"

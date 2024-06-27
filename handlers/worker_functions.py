@@ -108,8 +108,7 @@ async def is_order_handler(msg: types.Message, state: FSMContext):
         await state.clear()
     else:
         channel_info = await state.get_data()
-        data = create_channel(channel_info['username'], channel_info['channel_id'],
-                              True if msg.text == "Ha ✅" else False)
+        data = create_channel(channel_info['username'], channel_info['channel_id'], True if msg.text == "Ha ✅" else False)
         if data:
             await msg.answer("Kanal muvaffaqiyatli qo'shildi ✅", reply_markup=channels_btn())
             await state.clear()
@@ -211,13 +210,12 @@ async def rek_state(msg: types.Message, bot: Bot, state: FSMContext):
             for user in get_users():
                 if int(user['telegram_id']) not in ADMINS:
                     try:
-                        await msg.copy_to(int(user['telegram_id']), caption=msg.caption,
-                                          caption_entities=msg.caption_entities, reply_markup=msg.reply_markup)
-                    except Exception as e:
+                        await msg.copy_to(int(user['telegram_id']), caption=msg.caption, caption_entities=msg.caption_entities, reply_markup=msg.reply_markup)
+                    except:
                         summa += 1
             for admin in ADMINS:
                 await bot.send_message(int(admin), text=f"Botni bloklagan Userlar soni: {summa}")
-        except Exception as e:
+        except:
             pass
 
 
@@ -228,8 +226,7 @@ async def channel_check_handler(callback: types.CallbackQuery, bot: Bot):
         await callback.message.delete()
         await callback.answer("Obuna bo'lganingiz uchun rahmat ☺️")
     else:
-        await callback.message.answer("Botdan foydalanish uchun ⚠️\nIltimos quidagi kanallarga obuna bo'ling ‼️",
-                                      reply_markup=forced_channel())
+        await callback.message.answer("Botdan foydalanish uchun ⚠️\nIltimos quidagi kanallarga obuna bo'ling ‼️", reply_markup=forced_channel())
 
 
 @mainrouter.message(lambda msg: msg.text == "❌")
@@ -245,15 +242,13 @@ async def forward_last_video(msg: types.Message, bot: Bot):
         data = get_movie(int(msg.text))
         if data:
             try:
-                await bot.send_video(chat_id=msg.from_user.id, video=data[0],
-                                     caption=f"{data[1]}\n\n🤖 Bizning bot: @Tarjima_KinoIarbot")
+                await bot.send_video(chat_id=msg.from_user.id, video=data[0], caption=f"{data[1]}\n\n🤖 Bizning bot: @Tarjima_KinoIarbot")
             except:
                 await msg.reply(f"{msg.text} - id bilan hech qanday kino topilmadi ❌")
         else:
             await msg.reply(f"{msg.text} - id bilan hech qanday kino topilmadi ❌")
     else:
-        await msg.answer("Botdan foydalanish uchun ⚠️\nIltimos quidagi kanallarga obuna bo'ling ‼️",
-                         reply_markup=forced_channel())
+        await msg.answer("Botdan foydalanish uchun ⚠️\nIltimos quidagi kanallarga obuna bo'ling ‼️", reply_markup=forced_channel())
 
 
 @mainrouter.chat_join_request()

@@ -52,7 +52,6 @@ def startup_table():
         created_at TIMESTAMP DEFAULT now()
     )
     '''
-
     cur.execute(query)
     cur.execute(channel_query)
     cur.execute(link_query)

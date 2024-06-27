@@ -7,10 +7,9 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
 
+from data.config import TOKEN
 from db.connect import startup_table
 from handlers.first_commands import mainrouter
-from data.config import TOKEN
-
 
 dp = Dispatcher(storage=MemoryStorage())
 
