@@ -67,9 +67,16 @@ class ChannelClass(Base):
         cur.execute(query, (channel_id,))
         return cur.fetchone()
 
+    def get_data_is_order(self, channel_id: str, is_order: bool):
+        query = f"SELECT * FROM {self.table} WHERE channel_id = %s and is_order = %s"
+        cur.execute(query, (channel_id, is_order))
+        return cur.fetchone()
+
     def delete_data(self, channel_id: str):
         query = f"DELETE FROM {self.table} WHERE channel_id = %s"
+        query_request = f"DELETE FROM join_requests WHERE channel_id = %s"
         cur.execute(query, (channel_id,))
+        cur.execute(query_request, (channel_id,))
         conn.commit()
 
 
@@ -88,4 +95,21 @@ class LinkClass(Base):
     def delete_data(self, link: str):
         query = f"DELETE FROM {self.table} WHERE link = %s"
         cur.execute(query, (link,))
+        conn.commit()
+
+
+class JoinRequest(Base):
+    def create_data(self, channel_id: str, user_id: str):
+        query = f"INSERT INTO {self.table}(channel_id, user_id) VALUES (%s, %s)"
+        cur.execute(query, (channel_id, user_id))
+        conn.commit()
+
+    def get_data(self, channel_id: str, user_id: str):
+        query = f"SELECT * FROM {self.table} WHERE channel_id = %s AND user_id = %s"
+        cur.execute(query, (channel_id, user_id))
+        return cur.fetchone()
+
+    def delete_data(self, channel_id: str, user_id: str):
+        query = f"DELETE FROM {self.table} WHERE channel_id = %s AND user_id = %s"
+        cur.execute(query, (channel_id, user_id))
         conn.commit()

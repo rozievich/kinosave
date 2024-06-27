@@ -5,7 +5,7 @@ from data.config import ADMINS
 from keyboards.inline_keyboards import forced_channel
 from keyboards.reply_keyboards import admin_btn, movies_btn, exit_btn, channels_btn, is_order_btn
 from models.model import statistika_user, statistika_movie, create_movie, get_channels, create_channel, delete_channel, \
-    get_users, get_movie, create_link, delete_link
+    get_users, get_movie, create_link, delete_link, check_order_channels, create_join_request
 from states.state_admin import AddMedia, AddChannelState, DeleteChannelState, ReklamaState, AddLinkState, \
     DeleteLinkState
 from .first_commands import check_sub_channels, mainrouter
@@ -257,5 +257,7 @@ async def forward_last_video(msg: types.Message, bot: Bot):
 
 
 @mainrouter.chat_join_request()
-async def chat_join_request_handler(msg: types.Message, bot: Bot):
-    print(msg)
+async def chat_join_request_handler(chat_join_request: types.ChatJoinRequest):
+    info = check_order_channels(str(chat_join_request.chat.id))
+    if info:
+        await create_join_request(str(chat_join_request.chat.id), str(chat_join_request.from_user.id))

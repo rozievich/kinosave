@@ -1,10 +1,11 @@
-from .orm import Base, MediaClass, ChannelClass, LinkClass
-
+from .orm import Base, MediaClass, ChannelClass, LinkClass, JoinRequest
 
 user = Base("users")
 channel = ChannelClass("channels")
 movie = MediaClass("movies")
 links = LinkClass("links")
+jrequst = JoinRequest("join_requests")
+
 
 # User table data
 
@@ -74,7 +75,7 @@ def create_channel(username: str, channel_id: str, is_order: bool):
     else:
         channel.create_data(username, channel_id, is_order)
         return True
-    
+
 
 def delete_channel(channel_id: str):
     data = channel.get_data(channel_id)
@@ -119,3 +120,20 @@ def delete_link(url: str):
         return True
     else:
         return None
+
+
+def check_order_channels(channel_id: str):
+    data = channel.get_data(channel_id=channel_id)
+    if data:
+        return True
+    else:
+        return False
+
+
+async def create_join_request(channel_id: str, user_id: str):
+    data = jrequst.get_data(channel_id=channel_id, user_id=user_id)
+    if data:
+        return True
+    else:
+        jrequst.create_data(channel_id=channel_id, user_id=user_id)
+        return True

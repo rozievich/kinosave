@@ -25,7 +25,7 @@ def startup_table():
         id BIGSERIAL PRIMARY KEY,
         username VARCHAR(128) NOT NULL,
         channel_id VARCHAR(128) UNIQUE,
-        is_order BOOLEAN DEFAULT 0,
+        is_order BOOLEAN DEFAULT False,
         created_at TIMESTAMP DEFAULT now()
     )
     '''
