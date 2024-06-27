@@ -49,7 +49,7 @@ class MediaClass(Base):
         cur.execute(query, (post_id,))
         return cur.fetchone()
 
-    def get_movie(self, file_id: int):
+    def get_movie(self, file_id: str):
         query = f"SELECT * FROM {self.table} WHERE file_id = %s"
         cur.execute(query, (file_id,))
         return cur.fetchone()
@@ -66,6 +66,11 @@ class ChannelClass(Base):
         query = f"SELECT * FROM {self.table} WHERE channel_id = %s"
         cur.execute(query, (channel_id,))
         return cur.fetchone()
+
+    def get_datas_order(self, is_order: bool):
+        query = f"SELECT * FROM {self.table} WHERE is_order = %s"
+        cur.execute(query, (is_order,))
+        return cur.fetchall()
 
     def get_data_is_order(self, channel_id: str, is_order: bool):
         query = f"SELECT * FROM {self.table} WHERE channel_id = %s and is_order = %s"

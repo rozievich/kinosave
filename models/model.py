@@ -99,8 +99,8 @@ def get_channels():
     return text
 
 
-def get_channels_all():
-    return channel.get_datas()
+def get_channel_order(is_order: bool):
+    return channel.get_datas_order(is_order=is_order)
 
 
 # Links table data
@@ -137,3 +137,11 @@ async def create_join_request(channel_id: str, user_id: str):
     else:
         jrequst.create_data(channel_id=channel_id, user_id=user_id)
         return True
+
+
+async def get_join_request(channel_id: str, user_id: str):
+    data = jrequst.get_data(channel_id=channel_id, user_id=user_id)
+    if data:
+        return data
+    else:
+        return None
