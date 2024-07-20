@@ -3,7 +3,7 @@ from psycopg2.extras import DictCursor
 
 conn = psycopg2.connect(
     user="postgres",
-    dbname="sara_db",
+    dbname="kino_db",
     password="black0613",
     host="localhost",
     port=5432,
@@ -39,6 +39,7 @@ def startup_table():
     media_query = '''
     CREATE TABLE IF NOT EXISTS movies(
         id BIGSERIAL PRIMARY KEY,
+        post_id INT NOT NULL,
         file_id VARCHAR(800) NOT NULL,
         caption TEXT,
         created_at TIMESTAMP DEFAULT now()
