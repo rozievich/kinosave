@@ -1,3 +1,4 @@
+import asyncio
 from aiogram import types, Bot, F
 from aiogram.fsm.context import FSMContext
 
@@ -222,17 +223,30 @@ async def rek_state(msg: types.Message, bot: Bot, state: FSMContext):
         await bot.send_message(chat_id=msg.chat.id, text="Reklama yuborish boshlandi 🤖✅", reply_markup=admin_btn())
         await state.clear()
         try:
+            tasks = []
             summa = 0
             for user in get_users():
                 if int(user['telegram_id']) not in ADMINS:
-                    try:
-                        await msg.copy_to(int(user['telegram_id']), caption=msg.caption, caption_entities=msg.caption_entities, reply_markup=msg.reply_markup)
-                    except:
-                        summa += 1
+                    tasks.append(send_advertisement(msg, int(user['telegram_id']), bot))
+            
+            results = await asyncio.gather(*tasks, return_exceptions=True)
+            
+            for result in results:
+                if isinstance(result, Exception):
+                    summa += 1
+            
             for admin in ADMINS:
                 await bot.send_message(int(admin), text=f"Botni bloklagan Userlar soni: {summa}")
-        except:
+        except Exception as e:
             pass
+
+
+async def send_advertisement(msg: types.Message, user_id: int):
+    try:
+        await msg.copy_to(user_id, caption=msg.caption, caption_entities=msg.caption_entities, reply_markup=msg.reply_markup)
+    except Exception as e:
+        return e
+    return None
 
 
 @mainrouter.callback_query(F.data == "channel_check")
