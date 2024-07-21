@@ -10,6 +10,10 @@ class AddMedia(StatesGroup):
     media_id = State()
 
 
+class DeleteMediaState(StatesGroup):
+    post_id = State()
+
+
 class AddChannelState(StatesGroup):
     username = State()
     channel_id = State()

@@ -45,6 +45,18 @@ def create_movie(post_id: int, file_id: str, caption: str) -> int:
         return data.get('post_id', None)
 
 
+def delete_movie_func(post_id: int):
+    data = movie.get_data(post_id=post_id)
+    if data:
+        try:
+            movie.delete_movie(post_id=post_id)
+            return f"Kino muvaffaqiyatli o'chirildi ✅"
+        except:
+            return f"Kino o'chrishda xatolik yuzaga keldi ❌"
+    else:
+        return f"{post_id} - ID bilan kino topilmadi ❌"
+
+
 def get_movie(post_id: int):
     data = movie.get_data(post_id)
     if data:

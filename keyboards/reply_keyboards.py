@@ -28,6 +28,7 @@ def movies_btn():
                 KeyboardButton(text="Kino qo'shish 📥")
             ],
             [
+                KeyboardButton(text="Kino o'chirish 🗑"),
                 KeyboardButton(text="❌")
             ]
         ],

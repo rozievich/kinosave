@@ -40,6 +40,10 @@ class MediaClass(Base):
         cur.execute(query, (post_id, file_id, caption))
         conn.commit()
 
+    def delete_movie(self, post_id: int):
+        query = f"DELETE FROM {self.table} WHERE post_id = %s"
+        cur.execute(query, (post_id, ))
+        conn.commit()
 
     def get_data(self, post_id: int):
         query = f"SELECT * FROM {self.table} WHERE post_id = %s"
