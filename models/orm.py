@@ -40,6 +40,11 @@ class MediaClass(Base):
         cur.execute(query, (post_id, file_id, caption))
         conn.commit()
 
+    def delete_movie(self, post_id: int):
+        query = f"DELETE FROM {self.table} WHERE post_id = %s"
+        cur.execute(query, (post_id, ))
+        conn.commit()
+
     def get_id(self):
         cur.execute(f"SELECT max(id) FROM {self.table}")
         return cur.fetchone()

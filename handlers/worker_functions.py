@@ -6,9 +6,9 @@ from data.config import ADMINS
 from keyboards.inline_keyboards import forced_channel, rich_btn
 from keyboards.reply_keyboards import admin_btn, movies_btn, exit_btn, channels_btn, is_order_btn
 from models.model import statistika_user, statistika_movie, create_movie, get_channels, create_channel, delete_channel, \
-    get_users, get_movie, create_link, delete_link, check_order_channels, create_join_request, get_movies
+    get_users, get_movie, create_link, delete_link, check_order_channels, create_join_request, get_movies, delete_movie_func
 from states.state_admin import AddMedia, AddChannelState, DeleteChannelState, ReklamaState, AddLinkState, \
-    DeleteLinkState
+    DeleteLinkState, DeleteMovieState
 from .first_commands import check_sub_channels, mainrouter
 
 
@@ -73,6 +73,29 @@ async def handle_media_id(msg: types.Message, state: FSMContext):
             await state.clear()
         else:
             await msg.reply(f"{msg.text} - ID bilan kino mavjud!")
+    except:
+        await msg.answer("Iltimos Kod sifatida Raqam yuboring!", reply_markup=exit_btn())
+
+
+@mainrouter.message(F.text == "Kino o'chirish 🗑")
+async def handle_delete_media_func(msg: types.Message, state: FSMContext):
+    if msg.from_user.id in ADMINS:
+        await state.set_state(DeleteMovieState.post_id)
+        await msg.answer("Kinoni Kodini yuborishingiz mumkin 🎬", reply_markup=exit_btn())
+    else:
+        await msg.answer("Siz admin emassiz ❌", reply_markup=types.ReplyKeyboardRemove())
+
+
+@mainrouter.message(DeleteMovieState.post_id)
+async def handle_delete_media(msg: types.Message, state: FSMContext):
+    try:
+        if msg.text == "❌":
+            await msg.answer("Kino o'chirish bekor qilindi ❌", reply_markup=movies_btn())
+            await state.clear()
+        else:
+            data = delete_movie_func(int(msg.text))
+            await msg.reply(text=data, reply_markup=movies_btn())
+            await state.clear()
     except:
         await msg.answer("Iltimos Kod sifatida Raqam yuboring!", reply_markup=exit_btn())
 
