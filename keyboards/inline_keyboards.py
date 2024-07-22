@@ -14,3 +14,15 @@ def forced_channel():
         buttons.append([InlineKeyboardButton(text="Tekshirish ✅", callback_data="channel_check")])
     btn = InlineKeyboardMarkup(inline_keyboard=buttons)
     return btn
+
+
+def rich_btn():
+    btn = InlineKeyboardMarkup(
+        inline_keyboard=
+        [
+            [
+                InlineKeyboardButton(text="Boshqa kodlar", url="https://t.me/+9uco-4Gvr5xkNWYy")
+            ]
+        ]
+    )
+    return btn

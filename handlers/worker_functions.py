@@ -1,13 +1,14 @@
+import asyncio
 from aiogram import types, Bot, F
 from aiogram.fsm.context import FSMContext
 
 from data.config import ADMINS
-from keyboards.inline_keyboards import forced_channel
+from keyboards.inline_keyboards import forced_channel, rich_btn
 from keyboards.reply_keyboards import admin_btn, movies_btn, exit_btn, channels_btn, is_order_btn
 from models.model import statistika_user, statistika_movie, create_movie, get_channels, create_channel, delete_channel, \
-    get_users, get_movie, create_link, delete_link, check_order_channels, create_join_request
+    get_users, get_movie, create_link, delete_link, check_order_channels, create_join_request, get_movies, delete_movie_func
 from states.state_admin import AddMedia, AddChannelState, DeleteChannelState, ReklamaState, AddLinkState, \
-    DeleteLinkState
+    DeleteLinkState, DeleteMovieState
 from .first_commands import check_sub_channels, mainrouter
 
 
@@ -51,12 +52,52 @@ async def handle_video(msg: types.Message, state: FSMContext):
             await msg.answer("Kino yuklash bekor qilindi ❌", reply_markup=movies_btn())
             await state.clear()
         else:
-            data = create_movie(file_id=msg.video.file_id, caption=msg.caption)
-            if data:
-                await msg.reply(f"Kino malumotlar bazasiga saqlandi ✅\nKino Kodi: {data[0]}", reply_markup=movies_btn())
-                await state.clear()
+            await state.update_data(file_id=msg.video.file_id, caption=msg.caption)
+            await state.set_state(AddMedia.media_id)
+            await msg.answer(text="Iltimos Kino uchun ID kiriting: ", reply_markup=exit_btn())
     except:
         await msg.answer("Iltimos Kino yuboring!", reply_markup=exit_btn())
+
+
+@mainrouter.message(AddMedia.media_id)
+async def handle_media_id(msg: types.Message, state: FSMContext):
+    try:
+        if msg.text == "❌":
+            await msg.answer("Kino yuklash bekor qilindi ❌", reply_markup=movies_btn())
+            await state.clear()
+        elif not get_movie(int(msg.text)):
+            film_info = await state.get_data()
+            data = create_movie(file_id=film_info['file_id'], caption=film_info['caption'], post_id=int(msg.text))
+            if data:
+                await msg.reply(f"Kino malumotlar bazasiga saqlandi ✅\nKino Kodi: {data}", reply_markup=movies_btn())
+            await state.clear()
+        else:
+            await msg.reply(f"{msg.text} - ID bilan kino mavjud!")
+    except:
+        await msg.answer("Iltimos Kod sifatida Raqam yuboring!", reply_markup=exit_btn())
+
+
+@mainrouter.message(F.text == "Kino o'chirish 🗑")
+async def handle_delete_media_func(msg: types.Message, state: FSMContext):
+    if msg.from_user.id in ADMINS:
+        await state.set_state(DeleteMovieState.post_id)
+        await msg.answer("Kinoni Kodini yuborishingiz mumkin 🎬", reply_markup=exit_btn())
+    else:
+        await msg.answer("Siz admin emassiz ❌", reply_markup=types.ReplyKeyboardRemove())
+
+
+@mainrouter.message(DeleteMovieState.post_id)
+async def handle_delete_media(msg: types.Message, state: FSMContext):
+    try:
+        if msg.text == "❌":
+            await msg.answer("Kino o'chirish bekor qilindi ❌", reply_markup=movies_btn())
+            await state.clear()
+        else:
+            data = delete_movie_func(int(msg.text))
+            await msg.reply(text=data, reply_markup=movies_btn())
+            await state.clear()
+    except:
+        await msg.answer("Iltimos Kod sifatida Raqam yuboring!", reply_markup=exit_btn())
 
 
 @mainrouter.message(F.text == "Kanallar 🖇")
@@ -205,17 +246,30 @@ async def rek_state(msg: types.Message, bot: Bot, state: FSMContext):
         await bot.send_message(chat_id=msg.chat.id, text="Reklama yuborish boshlandi 🤖✅", reply_markup=admin_btn())
         await state.clear()
         try:
+            tasks = []
             summa = 0
             for user in get_users():
                 if int(user['telegram_id']) not in ADMINS:
-                    try:
-                        await msg.copy_to(int(user['telegram_id']), caption=msg.caption, caption_entities=msg.caption_entities, reply_markup=msg.reply_markup)
-                    except:
-                        summa += 1
+                    tasks.append(send_advertisement(msg, int(user['telegram_id']), bot))
+            
+            results = await asyncio.gather(*tasks, return_exceptions=True)
+            
+            for result in results:
+                if isinstance(result, Exception):
+                    summa += 1
+            
             for admin in ADMINS:
                 await bot.send_message(int(admin), text=f"Botni bloklagan Userlar soni: {summa}")
-        except:
+        except Exception as e:
             pass
+
+
+async def send_advertisement(msg: types.Message, user_id: int):
+    try:
+        await msg.copy_to(user_id, caption=msg.caption, caption_entities=msg.caption_entities, reply_markup=msg.reply_markup)
+    except Exception as e:
+        return e
+    return None
 
 
 @mainrouter.callback_query(F.data == "channel_check")
@@ -239,9 +293,11 @@ async def forward_last_video(msg: types.Message, bot: Bot):
     check = await check_sub_channels(int(msg.from_user.id), bot)
     if check:
         data = get_movie(int(msg.text))
+        all_movie = get_movies()
         if data:
             try:
                 await bot.send_video(chat_id=msg.from_user.id, video=data[0], caption=f"{data[1]}\n\n🤖 Bizning bot: @Tarjima_KinoIarbot")
+                await msg.answer(f"<b> 📥 Yuklangan: {len(all_movie)} ta</b>", reply_markup=rich_btn())
             except:
                 await msg.reply(f"{msg.text} - id bilan hech qanday kino topilmadi ❌")
         else:
