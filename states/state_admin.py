@@ -1,6 +1,7 @@
 from aiogram.fsm.state import State, StatesGroup
 
 
+
 class ReklamaState(StatesGroup):
     rek = State()
 
@@ -12,6 +13,15 @@ class AddMedia(StatesGroup):
 
 class DeleteMediaState(StatesGroup):
     post_id = State()
+
+
+class AddSeriesState(StatesGroup):
+    series_media = State()
+    series_id = State()
+
+
+class DeleteSeriesState(StatesGroup):
+    series_id = State()
 
 
 class AddChannelState(StatesGroup):

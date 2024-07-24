@@ -45,8 +45,18 @@ def startup_table():
         created_at TIMESTAMP DEFAULT now()
     )
     '''
+    series_query = '''
+    CREATE TABLE IF NOT EXISTS series(
+        id BIGSERIAL PRIMARY KEY,
+        series_id INT NOT NULL,
+        file_id VARCHAR(800) NOT NULL,
+        caption TEXT,
+        created_at TIMESTAMP DEFAULT now()
+    )
+    '''
     cur.execute(query)
     cur.execute(channel_query)
     cur.execute(link_query)
     cur.execute(media_query)
+    cur.execute(series_query)
     conn.commit()
