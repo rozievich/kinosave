@@ -67,4 +67,5 @@ def startup_table():
     cur.execute(link_query)
     cur.execute(media_query)
     cur.execute(series_query)
+    cur.execute(join_request)
     conn.commit()
