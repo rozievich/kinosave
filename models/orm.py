@@ -35,7 +35,7 @@ class Base:
 
 class MediaClass(Base):
 
-    def create_data(self, file_id: str, caption: str, post_id: int):
+    def create_data(self, post_id: int, file_id: str, caption: str):
         query = f"INSERT INTO {self.table}(post_id, file_id, caption) VALUES (%s, %s, %s)"
         cur.execute(query, (post_id, file_id, caption))
         conn.commit()
@@ -44,10 +44,6 @@ class MediaClass(Base):
         query = f"DELETE FROM {self.table} WHERE post_id = %s"
         cur.execute(query, (post_id, ))
         conn.commit()
-
-    def get_id(self):
-        cur.execute(f"SELECT max(id) FROM {self.table}")
-        return cur.fetchone()
 
     def get_data(self, post_id: int):
         query = f"SELECT * FROM {self.table} WHERE post_id = %s"
@@ -58,6 +54,30 @@ class MediaClass(Base):
         query = f"SELECT * FROM {self.table} WHERE file_id = %s"
         cur.execute(query, (file_id,))
         return cur.fetchone()
+
+
+class SeriesClass(Base):
+
+    def create_series(self, series_id: int, file_id: str, caption: str):
+        query = f"INSERT INTO {self.table}(series_id, file_id, caption) VALUES (%s, %s, %s)"
+        cur.execute(query, (series_id, file_id, caption))
+        conn.commit()
+    
+    def delete_series(self, series_id: int):
+        query = f"DELETE FROM {self.table} WHERE series_id = %s"
+        cur.execute(query, (series_id, ))
+        conn.commit()
+    
+    def get_series(self, series_id: int):
+        query = f"SELECT * FROM {self.table} WHERE series_id = %s"
+        cur.execute(query, (series_id, ))
+        return cur.fetchall()
+    
+    def get_all_series(self):
+        query = f"SELECT DISTINCT series_id FROM {self.table}"
+        cur.execute(query)
+        return cur.fetchall()
+    
 
 
 class ChannelClass(Base):

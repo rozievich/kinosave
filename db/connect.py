@@ -3,7 +3,7 @@ from psycopg2.extras import DictCursor
 
 conn = psycopg2.connect(
     user="postgres",
-    dbname="kino_db",
+    dbname="tarjima_db",
     password="black0613",
     host="localhost",
     port=5432,
@@ -45,6 +45,15 @@ def startup_table():
         created_at TIMESTAMP DEFAULT now()
     )
     '''
+    series_query = '''
+    CREATE TABLE IF NOT EXISTS series(
+        id BIGSERIAL PRIMARY KEY,
+        series_id INT NOT NULL,
+        file_id VARCHAR(800) NOT NULL,
+        caption TEXT,
+        created_at TIMESTAMP DEFAULT now()
+    )
+    '''
     join_request = '''
     CREATE TABLE IF NOT EXISTS join_requests(
         id BIGSERIAL PRIMARY KEY,
@@ -57,5 +66,5 @@ def startup_table():
     cur.execute(channel_query)
     cur.execute(link_query)
     cur.execute(media_query)
-    cur.execute(join_request)
+    cur.execute(series_query)
     conn.commit()
