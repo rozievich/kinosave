@@ -4,7 +4,7 @@ from psycopg2.extras import DictCursor
 
 conn = psycopg2.connect(
     user="postgres",
-    dbname="sara_db",
+    dbname="kino_db",
     password="black0613",
     host="localhost",
     port=5432,

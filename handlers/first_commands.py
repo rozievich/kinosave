@@ -16,7 +16,7 @@ async def welcome_handler(msg: types.Message, bot: Bot):
     check = await check_sub_channels(int(msg.from_user.id), bot)
     if check:
         await bot.set_my_commands([types.BotCommand(command="start", description="Ishga tushirish ♻️")])
-        await bot.send_message(msg.chat.id, text=f"Assalomu alaykum {msg.from_user.first_name} 🤖\n<b>Tarjimalar Bot</b> - orqali siz o'zingizga yoqqan kinoni topishingiz mumkin 🎬\nShunchaki kino kodini yuboring va kinoni oling ✅")
+        await bot.send_message(msg.chat.id, text=f"Assalomu alaykum {msg.from_user.first_name} 🤖\n<b>Kinolarni Dodasi Bot</b> - orqali siz o'zingizga yoqqan kinoni topishingiz mumkin 🎬\nShunchaki kino kodini yuboring va kinoni oling ✅")
     else:
         await msg.answer("Botdan foydalanish uchun ⚠️\nIltimos quidagi kanallarga obuna bo'ling ‼️", reply_markup=forced_channel())
 
