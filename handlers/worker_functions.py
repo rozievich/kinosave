@@ -248,7 +248,7 @@ async def forward_last_video(msg: types.Message, bot: Bot):
             data = get_movie(int(msg.text))
             if data:
                 try:
-                    await bot.send_video(chat_id=msg.from_user.id, video=data[0], caption=f"{data[1]}\n\n🤖 Bizning bot: @Tarjima_KinoIarbot")
+                    await bot.send_video(chat_id=msg.from_user.id, video=data[0], caption=f"{data[1]}\n\n🤖 Bizning bot: @Tarjima_k1nolar_bot")
                 except:
                     await msg.reply(f"{msg.text} - id bilan hech qanday kino topilmadi ❌") 
             else:

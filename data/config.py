@@ -4,4 +4,4 @@ from dotenv import load_dotenv
 load_dotenv()
 
 TOKEN = os.getenv("TOKEN")
-ADMINS = [5553781606]
+ADMINS = [5945419622, 1817289465]
