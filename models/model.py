@@ -1,10 +1,11 @@
-from .orm import Base, MediaClass, ChannelClass, LinkClass
+from .orm import Base, MediaClass, ChannelClass, LinkClass, SeriesClass
 
 
 user = Base("users")
 channel = ChannelClass("channels")
 movie = MediaClass("movies")
 links = LinkClass("links")
+series = SeriesClass("series")
 
 # User table data
 
@@ -44,6 +45,17 @@ def create_movie(file_id: str, caption: str) -> int:
     else:
         return data.get('id', None)
 
+def delete_movie_func(post_id: int):
+    data = movie.get_data(post_id=post_id)
+    if data:
+        try:
+            movie.delete_movie(post_id=post_id)
+            return f"Kino muvaffaqiyatli o'chirildi ✅"
+        except:
+            return f"Kino o'chrishda xatolik yuzaga keldi ❌"
+    else:
+        return f"{post_id} - ID bilan kino topilmadi ❌"
+
 
 def get_movie(post_id: int):
     data = movie.get_data(post_id)
@@ -56,12 +68,14 @@ def get_movie(post_id: int):
 def statistika_movie():
     data = movie.statistika()
     all_data = movie.get_datas()
+    all_series = series.get_all_series()
     if data:
         return (f"Admin uchun Kinolar statistikasi 📊\n\n"
                 f"Oxirgi 30 kun ichida yuklangan kinolar soni: {len(data['month'])}\n"
                 f"Oxirgi 7 kun ichida yuklangan kinolar soni: {len(data['week'])}\n"
                 f"Oxirgi 24 soat ichida yuklangan kinolar soni: {len(data['day'])}\n\n"
-                f"Barcha Kinolar soni: {len(all_data)}")
+                f"Barcha Kinolar soni: {len(all_data)} 📽\n\n"
+                f"Barcha Seriallar soni: {len(all_series)} 🎞")
     else:
         return False
 
@@ -119,3 +133,31 @@ def delete_link(url: str):
         return True
     else:
         return None
+
+
+# Series models
+def create_series_func(series_id: int, file_id: str, caption: str):
+    try:
+        series.create_series(series_id, file_id, caption)
+    except:
+        return False
+    else:
+        return True
+
+
+def delete_series_func(series_id: int):
+    data = series.get_series(series_id)
+    if data:
+        series.delete_series(series_id=series_id)
+        return "Serial muvaffaqiyatli o'chirildi ✅"
+    else:
+        return f"S{series_id} - ID bilan kino topilmadi ❌"
+
+
+def get_series_func(series_id: int):
+    data = series.get_series(series_id)
+    if data:
+        return data
+    else:
+        return False
+

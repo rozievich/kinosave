@@ -4,8 +4,9 @@ from aiogram.fsm.context import FSMContext
 from data.config import ADMINS
 from keyboards.reply_keyboards import admin_btn, movies_btn, exit_btn, channels_btn
 from keyboards.inline_keyboards import forced_channel
-from models.model import statistika_user, statistika_movie, create_movie, get_channels, create_channel, delete_channel, get_users, get_movie, create_link, delete_link
-from states.state_admin import AddMedia, AddChannelState, DeleteChannelState, ReklamaState, AddLinkState, DeleteLinkState
+from models.model import statistika_user, statistika_movie, create_movie, get_channels, create_channel, delete_channel, get_users, get_movie, create_link, delete_link, create_series_func, delete_series_func, get_series_func, delete_movie_func
+from states.state_admin import AddMedia, AddChannelState, DeleteChannelState, ReklamaState, AddLinkState, DeleteLinkState, AddSeriesState, DeleteSeriesState, DeleteMediaState
+
 from .first_commands import check_sub_channels, mainrouter
 
 
@@ -56,6 +57,94 @@ async def handle_video(msg: types.Message, state: FSMContext):
                 await state.clear()
     except:
         await msg.answer("Iltimos Kino yuboring!", reply_markup=exit_btn())
+
+
+
+@mainrouter.message(F.text == "Kino o'chirish 🗑")
+async def handle_delete_media_func(msg: types.Message, state: FSMContext):
+    if msg.from_user.id in ADMINS:
+        await state.set_state(DeleteMediaState.post_id)
+        await msg.answer("Kinoni Kodini yuborishingiz mumkin 🎬", reply_markup=exit_btn())
+    else:
+        await msg.answer("Siz admin emassiz ❌", reply_markup=types.ReplyKeyboardRemove())
+
+
+@mainrouter.message(DeleteMediaState.post_id)
+async def handle_delete_media(msg: types.Message, state: FSMContext):
+    try:
+        if msg.text == "❌":
+            await msg.answer("Kino o'chirish bekor qilindi ❌", reply_markup=movies_btn())
+            await state.clear()
+        else:
+            data = delete_movie_func(int(msg.text))
+            await msg.reply(text=data, reply_markup=movies_btn())
+            await state.clear()
+    except:
+        await msg.answer("Iltimos Kod sifatida Raqam yuboring!", reply_markup=exit_btn())
+
+
+
+@mainrouter.message(F.text == "Serial qo'shish 📌")
+async def series_add_handler(msg: types.Message, state: FSMContext):
+    if msg.from_user.id in ADMINS:
+        await state.set_state(AddSeriesState.series_media)
+        await msg.answer("Serialning bitta qismini yuborishingiz mumkin 🎬", reply_markup=exit_btn())
+    else:
+        await msg.answer("Siz admin emassiz ❌", reply_markup=types.ReplyKeyboardRemove())
+
+
+@mainrouter.message(AddSeriesState.series_media)
+async def series_handle_video(msg: types.Message, state: FSMContext):
+    try:
+        if msg.text == "❌":
+            await msg.answer("Serial yuklash bekor qilindi ❌", reply_markup=movies_btn())
+            await state.clear()
+        else:
+            await state.update_data(file_id=msg.video.file_id, caption=msg.caption)
+            await state.set_state(AddSeriesState.series_id)
+            await msg.answer(text="Iltimos Serial uchun yangi ID kiriting yoki qo'shmoqchi bo'lgan serialingizning ID raqamini yozing:\n⚠️ <b>Eslatma</b>: Serial uchun ID har doim <b>S</b> bilan boshlanishi kerak!", reply_markup=exit_btn())
+    except:
+        await msg.answer("Iltimos Kino yuboring!", reply_markup=exit_btn())
+    
+
+@mainrouter.message(AddSeriesState.series_id)
+async def series_handle_media_id(msg: types.Message, state: FSMContext):
+    try:
+        if msg.text == "❌":
+            await msg.answer("Kino yuklash bekor qilindi ❌", reply_markup=movies_btn())
+            await state.clear()
+        else:
+            movie_info = await state.get_data()
+            series_info = create_series_func(series_id=int(msg.text[1:]), file_id=movie_info["file_id"], caption=movie_info["caption"])
+            if series_info:
+                await msg.reply(f"Serial malumotlar bazasiga saqlandi ✅\nSerial Kodi: <b>S{msg.text[1:]}</b>", reply_markup=movies_btn())
+            await state.clear()
+    except:
+        await msg.answer("Iltimos yuborgan kodingizni tekshiring hamda Boshida <b>S</b> va qolgani raqam ekanligiga ishonch hosil qiling!\nMisol: <b>S123</b>", reply_markup=exit_btn())
+
+
+@mainrouter.message(F.text == "Serial o'chirish 🗑")
+async def series_handle_delete_media_func(msg: types.Message, state: FSMContext):
+    if msg.from_user.id in ADMINS:
+        await state.set_state(DeleteSeriesState.series_id)
+        await msg.answer("O'chirish kerak bo'lgan Serial kodini yuborishingiz mumkin 🎬", reply_markup=exit_btn())
+    else:
+        await msg.answer("Siz admin emassiz ❌", reply_markup=types.ReplyKeyboardRemove())
+
+
+@mainrouter.message(DeleteSeriesState.series_id)
+async def series_handle_delete_media(msg: types.Message, state: FSMContext):
+    try:
+        if msg.text == "❌":
+            await msg.answer("Serial o'chirish bekor qilindi ❌", reply_markup=movies_btn())
+            await state.clear()
+        else:
+            data = delete_series_func(int(msg.text[1:]))
+            await msg.reply(text=data, reply_markup=movies_btn())
+            await state.clear()
+    except:
+        await msg.answer("Iltimos Kod sifatida Raqam yuboring!", reply_markup=exit_btn())
+
 
 
 @mainrouter.message(lambda msg: msg.text == "Kanallar 🖇")
@@ -222,17 +311,33 @@ async def exit_handler(msg: types.Message):
         await msg.answer("Bosh menyu 🔮", reply_markup=admin_btn())
 
 
-@mainrouter.message(lambda x: x.text.isdigit())
+@mainrouter.message()
 async def forward_last_video(msg: types.Message, bot: Bot):
-    check = await check_sub_channels(int(msg.from_user.id), bot)
-    if check:
-        data = get_movie(int(msg.text))
-        if data:
-            try:
-                await bot.send_video(chat_id=msg.from_user.id, video=data[0], caption=f"{data[1]}\n\n🤖 Bizning bot: @Kinolarni_Dodasi_Bot")
-            except:
-                await msg.reply(f"{msg.text} - id bilan hech qanday kino topilmadi ❌") 
+    try:
+        check = await check_sub_channels(int(msg.from_user.id), bot)
+        if check:
+            if msg.text[0] in ["s", "S"]:
+                film_id = int(msg.text[1:])
+                data = get_series_func(film_id)
+                if data:
+                    for serie in data:
+                        try:
+                            await bot.send_video(chat_id=msg.from_user.id, video=serie['file_id'], caption=f"{serie['caption']}\n\n🤖 Bizning bot: @Tarjima_KinoIarbot")
+                        except:
+                            await msg.answer("Bu qismni yuborishda muammolar yuzaga kelmoqda iltimos adminga murojat qiling!")
+                else:
+                    await msg.reply(f"{msg.text} - ID bilan hech qanday serial topilmadi ❌")
+            elif msg.text.isdigit():
+                film_id = int(msg.text)
+                data = get_movie(int(msg.text))
+                if data:
+                    try:
+                        await bot.send_video(chat_id=msg.from_user.id, video=data[0], caption=f"{data[1]}\n\n🤖 Bizning bot: @Tarjima_KinoIarbot")
+                    except:
+                        await msg.reply(f"{msg.text} - id bilan hech qanday kino topilmadi ❌") 
+                else:
+                    await msg.reply(f"{msg.text} - id bilan hech qanday kino topilmadi ❌")
         else:
-            await msg.reply(f"{msg.text} - id bilan hech qanday kino topilmadi ❌")
-    else:
-        await msg.answer("Botdan foydalanish uchun ⚠️\nIltimos quidagi kanallarga obuna bo'ling ‼️", reply_markup=forced_channel())
+            await msg.answer("Botdan foydalanish uchun ⚠️\nIltimos quidagi kanallarga obuna bo'ling ‼️", reply_markup=forced_channel())
+    except:
+        await msg.reply(f"Iltimos siz kiritgan ID to'g'ri formatda ekanligiga ishonch hosil qiling!")

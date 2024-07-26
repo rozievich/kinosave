@@ -8,6 +8,18 @@ class ReklamaState(StatesGroup):
 class AddMedia(StatesGroup):
     media = State()
 
+class DeleteMediaState(StatesGroup):
+    post_id = State()
+
+
+class AddSeriesState(StatesGroup):
+    series_media = State()
+    series_id = State()
+
+
+class DeleteSeriesState(StatesGroup):
+    series_id = State()
+
 
 class AddChannelState(StatesGroup):
     username = State()
