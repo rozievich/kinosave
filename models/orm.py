@@ -89,3 +89,27 @@ class LinkClass(Base):
         query = f"DELETE FROM {self.table} WHERE link = %s"
         cur.execute(query, (link, ))
         conn.commit()
+
+
+class Downloads(Base):
+
+    def create_download(self, film_id: int):
+        query = f"INSERT INTO {self.table}(film_id) VALUES(%s)"
+        cur.execute(query, (film_id, ))
+        conn.commit()
+    
+    def update_download(self, film_id: int, counts: int):
+        query = f"UPDATE {self.table} SET counts = %s WHERE film_id = %s"
+        cur.execute(query, (counts, film_id, ))
+        conn.commit()
+    
+    def get_download_count(self, film_id: int):
+        query = f"SELECT * FROM {self.table} WHERE film_id = %s"
+        cur.execute(query, (film_id, ))
+        return cur.fetchone()
+
+    def delete_download(self, film_id: int):
+        query = f"DELETE FROM {self.table} WHERE film_id = %s"
+        cur.execute(query, (film_id, ))
+        conn.commit()
+    

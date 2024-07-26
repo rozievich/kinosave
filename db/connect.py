@@ -45,8 +45,17 @@ def startup_table():
         created_at TIMESTAMP DEFAULT now()
     )
     '''
+    download_count = '''
+    CREATE TABLE IF NOT EXISTS downloads(
+        id BIGSERIAL PRIMARY KEY,
+        film_id INT NOT NULL UNIQUE,
+        counts INT DEFAULT 0,
+        created_at TIMESTAMP DEFAULT now()
+    )
+    '''
     cur.execute(query)
     cur.execute(channel_query)
     cur.execute(link_query)
     cur.execute(media_query)
+    cur.execute(download_count)
     conn.commit()

@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 from data.config import ADMINS
 from keyboards.reply_keyboards import admin_btn, movies_btn, exit_btn, channels_btn
 from keyboards.inline_keyboards import forced_channel
-from models.model import statistika_user, statistika_movie, create_movie, get_channels, create_channel, delete_channel, get_users, get_movie, create_link, delete_link
+from models.model import statistika_user, statistika_movie, create_movie, get_channels, create_channel, delete_channel, get_users, get_movie, create_link, delete_link, create_download_func
 from states.state_admin import AddMedia, AddChannelState, DeleteChannelState, ReklamaState, AddLinkState, DeleteLinkState
 from .first_commands import check_sub_channels, mainrouter
 
@@ -247,8 +247,12 @@ async def forward_last_video(msg: types.Message, bot: Bot):
         if check:
             data = get_movie(int(msg.text))
             if data:
+                downloads = 0
+                download_info = create_download_func(int(msg.text))
+                if download_info:
+                    downloads = download_info['counts']
                 try:
-                    await bot.send_video(chat_id=msg.from_user.id, video=data[0], caption=f"{data[1]}\n\n🤖 Bizning bot: @Tarjima_k1nolar_bot")
+                    await bot.send_video(chat_id=msg.from_user.id, video=data[0], caption=f"{data[1]}\n<b>📥 Yuklash:</b> {downloads}\n\n🤖 Bizning bot: @Tarjima_k1nolar_bot")
                 except:
                     await msg.reply(f"{msg.text} - id bilan hech qanday kino topilmadi ❌") 
             else:

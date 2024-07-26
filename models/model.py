@@ -1,10 +1,11 @@
-from .orm import Base, MediaClass, ChannelClass, LinkClass
+from .orm import Base, MediaClass, ChannelClass, LinkClass, Downloads
 
 
 user = Base("users")
 channel = ChannelClass("channels")
 movie = MediaClass("movies")
 links = LinkClass("links")
+download = Downloads("downloads")
 
 # User table data
 
@@ -119,3 +120,24 @@ def delete_link(url: str):
         return True
     else:
         return None
+
+
+# Downloads functions
+
+def create_download_func(film_id: int):
+    info = download.get_download_count(film_id=film_id)
+    if not info:
+        try:
+            download.create_download(film_id=film_id)
+        except:
+            return False
+        else:
+            return download.get_download_count(film_id=film_id)
+    else:
+        try:
+            max_count = int(info['counts']) + 1
+            download.update_download(film_id=film_id, counts=max_count)
+        except:
+            return False
+        else:
+            return download.get_download_count(film_id=film_id)
