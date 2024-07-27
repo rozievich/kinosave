@@ -252,7 +252,7 @@ async def forward_last_video(msg: types.Message, bot: Bot):
                 if download_info:
                     downloads = download_info['counts']
                 try:
-                    await bot.send_video(chat_id=msg.from_user.id, video=data[0], caption=f"{data[1]}\n<b>📥 Yuklash:</b> {downloads}\n\n🤖 Bizning bot: @Tarjima_k1nolar_bot")
+                    await bot.send_video(chat_id=msg.from_user.id, video=data[0], caption=f"{data[1]}\n<b>📥 Yuklash:</b> {downloads}\n\n🤖 Bizning bot: @Tarjima_k1nolar_bot", protect_content=True)
                 except:
                     await msg.reply(f"{msg.text} - id bilan hech qanday kino topilmadi ❌") 
             else:
